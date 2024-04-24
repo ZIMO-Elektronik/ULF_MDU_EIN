@@ -15,7 +15,7 @@ After the MXULF has detected the activation command, it will wait for an ULF_MDU
 
 ### Command Codes
 
-| MDU coding         | ULF_MDU_EIN coding | meaning      |
+| MDU coding         | ULF_MDU_EIN coding | Meaning      |
 | ------------------ | ------------|--------------|
 | 0xFFFF'FFFF        | 0xFF        | Ping |
 | 0xFFFF'FFFE        | 0xFE        | Data Rate |
@@ -23,23 +23,23 @@ After the MXULF has detected the activation command, it will wait for an ULF_MDU
 | 0xFFFF'FFF6        | 0xF6        | CV Read |
 | 0xFFFF'FFF9 		 | 0xF9        | CV Write |
 | 0xFFFF'FFF2        | 0xF2        | Busy |
-| 0xFFFF'FF06        | 0x06        | ZPP valid |
-| 0xFFFF'FF07        | 0x07        | LC DC query |
-| 0xFFFF'FF05        | 0x05        | Zpp erase |
-| 0xFFFF'FF08        | 0x08        | Zpp update |
-| 0xFFFF'FF0B        | 0x0B        | Zpp update end |
-| 0xFFFF'FF0C        | 0x0C        | Zpp exit |
-| 0xFFFF'FF0D        | 0x0D        | Zpp exit&reset |
+| 0xFFFF'FF06        | 0x06        | ZPP Valid |
+| 0xFFFF'FF07        | 0x07        | LC DC Query |
+| 0xFFFF'FF05        | 0x05        | Zpp Erase |
+| 0xFFFF'FF08        | 0x08        | Zpp Update |
+| 0xFFFF'FF0B        | 0x0B        | Zpp Update End |
+| 0xFFFF'FF0C        | 0x0C        | Zpp Exit |
+| 0xFFFF'FF0D        | 0x0D        | Zpp Exit&Reset |
 | 0xFFFF'FFF7        | 0xF7        | Salsa20 Initialization|
 | 0xFFFF'FFF5        | 0xF5        | Zsu Erase | 
 | 0xFFFF'FFF8        | 0xF8        | Zsu Update |
-| 0xFFFF'FFFB        | 0xFB        | Crc32 start |
-| 0xFFFF'FFFC        | 0xFC        | Crc32 result |
-| 0xFFFF'FFFD        | 0xFD        | Crc32 result exit |
-| *ZPP entry*        | 0x01        | enter MDU zsu load|
-| *ZSU entry*        | 0x02        | enter MDU Firmware|
+| 0xFFFF'FFFB        | 0xFB        | Crc32 Start |
+| 0xFFFF'FFFC        | 0xFC        | Crc32 Result |
+| 0xFFFF'FFFD        | 0xFD        | Crc32 Result&Exit |
+| *ZPP Entry*        | 0x01        | Enter Zsu Load|
+| *ZSU Entry*        | 0x02        | Enter Zpp Load|
 
-The command codes have been shortened to a single byte, and the receiced command code and data bytes are supplemented by a preamble and the following acknowledgement bits.  Other than that, each command has the same structure and contents, therefore a detailed description of each of them will be omitted here. 
+The command codes have been shortened to a single byte, and the receiced command code and data bytes are supplemented by a preamble and the following acknowledgement bits.  Other than that, each command has the same structure and contents, therefore a detailed description of each of them will be omitted here except for *Zpp Entry* and *Zsu Entry*.
 
 ### ZPP Load Entry
 
@@ -47,7 +47,7 @@ Activation of the MDU sound load state in a compatible decoder happens via a seq
 
 As described [here](https://github.com/ZIMO-Elektronik/MDU?tab=readme-ov-file#entry),  Bytes 1-5 are of fixed value in this sequence. Bytes 6-9 may contain a specific serial number, or all zeros to address any connected decoder.
 
-Therefore, to start the entry procedure, the following packet has to be sent:
+Therefore, to start the entry procedure, the following packet has to be received:
 
 | Code | Byte 1 | Byte 2 | Byte 3 | Byte 4 |
 | --- | --- | --- | --- | --- | 
@@ -55,11 +55,11 @@ Therefore, to start the entry procedure, the following packet has to be sent:
 
 ### ZSU Load Entry
 
-Similarly, activation of the MDU firmware load state happens via a sequence of DCC configuration variable verify commands.
+Similarly, activation of the MDU firmware load state happens via a sequence of DCC configuration variable verify commands. For this to happen, the following command packet, containing a valid Decoder ID, can be used.
 
-| Code | Byte 1 | Byte 2 | Byte 3 | Byte 4 | Byte 5| Byte 6 | Byte 7 | Byte 8 |
-| --- | --- | --- | --- | --- | --- | --- | --- |--- |
-| 0x02 | ID | ID | ID | ID | SN | SN | SN | SN |
+| Code | Byte 1 | Byte 2 | Byte 3 | Byte 4 |
+| --- | --- | --- | --- | --- |
+| 0x02 | ID | ID | ID | ID |
 
 
 
