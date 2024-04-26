@@ -72,7 +72,11 @@ A basic on the fly check is performed during reception:
 
 Once a valid packet is in the buffer, the device will generate the corresponding MDU track signal and look for a response during the Acknowledgment bits.
 
-A byte value is sent back to the host depending on the outcome:
+
+
+### MDU Command Response
+
+A faulty byte sequence  will generate a protocol error response. If a packet was transmitted succesfully, a message is generated with whatever answer the decoder has given.
 
 | response code | meaning |
 | --------------| ------- |
@@ -80,11 +84,6 @@ A byte value is sent back to the host depending on the outcome:
 | 1 | channel 1 response |
 | 2 | channel 2 response |
 | 3 | protocol error |
-
-
-
-### MDU Command Response
-
 
 
 
