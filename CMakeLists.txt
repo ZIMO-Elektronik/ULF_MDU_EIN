@@ -27,6 +27,12 @@ endif()
 
 target_common_warnings(ULF_MDU_EIN INTERFACE)
 
+if(NOT TARGET MDU::MDU)
+  cpmaddpackage("gh:ZIMO-Elektronik/MDU@0.18.1")
+endif()
+
+target_link_libraries(ULF_MDU_EIN INTERFACE MDU::MDU)
+
 if(PROJECT_IS_TOP_LEVEL)
   include(CTest)
   # add_subdirectory(examples)

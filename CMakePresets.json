@@ -7,10 +7,37 @@
     },
     "configurePresets": [
         {
-            "name": "Debug",
+            "name": "debug",
+            "displayName": "Debug",
             "binaryDir": "${sourceDir}/build",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "debug",
+            "displayName": "Debug",
+            "configurePreset": "debug",
+            "jobs": 16,
+            "cleanFirst": false
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "test",
+            "displayName": "Test",
+            "configurePreset": "debug",
+            "output": {
+                "shortProgress": true,
+                "outputOnFailure": true,
+                "labelSummary": true
+            },
+            "execution": {
+                "jobs": 16,
+                "timeout": 360,
+                "scheduleRandom": true
             }
         }
     ]

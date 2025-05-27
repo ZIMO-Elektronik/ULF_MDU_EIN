@@ -11,4 +11,10 @@
 #pragma once
 
 #include "mdu_ein/ack.hpp"
+#include "mdu_ein/bytes2mdu_ein.hpp"
+#include "mdu_ein/mdu_ein2packet.hpp"
+#include "mdu_ein/mdu_ein2special.hpp"
 #include "mdu_ein/nak.hpp"
+#include "mdu_ein/response2mdu_ein.hpp"
+#include "mdu_ein/special.hpp"
+#include "mdu_ein/special2mdu_ein.hpp"

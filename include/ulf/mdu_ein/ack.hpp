@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-///
+/// Acknowledge
 ///
 /// \file   ulf/mdu_ein/ack.hpp
 /// \author Vincent Hamp
@@ -16,4 +16,4 @@ namespace ulf::mdu_ein {
 
 inline constexpr uint8_t ack{0x06u};
 
-}  // namespace ulf::mdu_ein
+} // namespace ulf::mdu_ein
