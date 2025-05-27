@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-///
+/// Not acknowledge
 ///
 /// \file   ulf/mdu_ein/nak.hpp
 /// \author Vincent Hamp
@@ -16,4 +16,4 @@ namespace ulf::mdu_ein {
 
 inline constexpr uint8_t nak{0x15u};
 
-}  // namespace ulf::mdu_ein
+} // namespace ulf::mdu_ein
