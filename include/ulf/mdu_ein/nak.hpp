@@ -14,6 +14,8 @@
 
 namespace ulf::mdu_ein {
 
-inline constexpr uint8_t nak{0x15u};
+using Nak = uint8_t;
+
+inline constexpr Nak nak{0x15u};
 
 } // namespace ulf::mdu_ein
