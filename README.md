@@ -32,10 +32,10 @@ The protocol describes frames for ZPP / ZSU tunneled MDU packets and special com
 A standard ULF_MDU_EIN frame contains the tunneled MDU packet.
 | Length  | Value  | Description      |
 | ------- | ------ | ---------------- |
-| 4 byte  | 'MDUB' | Frame prefix     |
+| 4 byte  | `MDUB` | Frame prefix     |
 | 2 byte  | N      | Length of packet |
 | N byte  |        | MDU Packet       |
-| 4 byte  | 'MDUE' | Frame suffix     |
+| 4 byte  | `MDUE` | Frame suffix     |
 
 The response for a ULF_MDU_EIN packet frame is a pair of standard ASCII ACK(`\x06`) or NAK(`\x15`) separated with ASCII semicolon and ended with ASCII colon. This pair of characters essentially corresponds to the MDU response of a decoder and includes channel 1 and channel 2 acknowledgments.
 ```
@@ -43,23 +43,41 @@ The response for a ULF_MDU_EIN packet frame is a pair of standard ASCII ACK(`\x0
 ```
 
 ### Special Command
-| Length | Value  | Description                 |
-| ------ | ------ | --------------------------- |
-| 4 byte | 'MDUB' | Frame prefix                | 
-| 2 byte | 0x00   |                             |
-| 4 byte |        | Command code                |
-| 2 byte |        | Payload, depends on command |
-| 4 byte | 'MDUE' | Frame suffix                |
+| Length  | Value  | Description                    |
+| ------- | ------ | ------------------------------ |
+| 4 byte  | `MDUB` | Frame prefix                   | 
+| 2 byte  | 0x00   |                                |
+| 4 byte  |        | Command code                   |
+| 1 byte  |        | Subcommand depends on command  |
+| 16 byte | --     | Command payload                |
+| 4 byte  | `MDUE` | Frame suffix                   |
 
 The special commands are reserved commands to perform non-standard-tunneled actions such as entry sequence or transfer rate selection. Currently, possible commands are:
-| Code    | Payload   | Description           |
-| ------- | --------- | --------------------- |
-| 'ETRY'  | 0x00      | Alternate entry       |
-|         | 0x01      | ZSU entry using DCC   |
-|         | 0x02      | ZPP entry using DCC   |
-| 'SPDS'  | 0x0X      | Set speed to X (0..4) |
+| Code    | Subcommand    | Payload                                     | Description           |
+| ------- | ------------- | ------------------------------------------- | --------------------- |
+| 'ETRY'  | 0x00          | `zeroed`                                    | ZSU entry             |
+|         | 0x01          | <a href="#dcc-zsu-entry">DCC ZSU Entry</a>  | ZSU entry using DCC   |
+|         | 0x02          | <a href="#dcc-zpp-entry">DCC ZPP Entry</a>  | ZPP entry using DCC   |
+| 'SPDS'  | 0x0X          | `zeroed`                                    | Set speed to X (0..4) |
 
 The response for special commands is the same as in the general case. In case of error transmit `\x15;\x15:`, in the case of success `\x06;\x06:`.
+
+#### DCC ZSU Entry 
+The DCC ZSU entry may need one or multiple decoder serial numbers (SN) and / or decoder identifier (ID). Hence, the payload for this command is structured as follows
+| Byte(s)  | Description              |
+| -------- | ------------------------ |
+| [15..12] | Decoder Identifier       |
+| [11..8]  | Decoder Serial number    |
+| [7]      | Continue Entry sequence  |
+| [6..0]   | `zeroed`                 |
+
+#### DCC ZPP Entry
+The DCC ZPP entry may need one or multiple decoder serial numbers (SN). Hence, the payload for this command is structured as follows
+| Byte(s)  | Description              |
+| -------- | ------------------------ |
+| [15..12] | Decoder Serial number    |
+| [11]     | Continue Entry sequence  |
+| [10..0]  | `zeroed`                 |
 
 ### Timeout
 In case of unstable USB communication (e.g. bugs in CDC driver), timeouts need to be defined. The following timeout values are calculated using the worst case MDU packet (ZppWrite - 256 byte zero payload), while also respecting the bit timings of each transfer rate.

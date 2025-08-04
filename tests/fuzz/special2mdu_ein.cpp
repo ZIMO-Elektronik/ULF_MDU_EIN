@@ -7,8 +7,10 @@ TEST(fuzz, special2mdu_ein_random) {
   std::random_device rd{};
 
   for (auto i{0uz}; i < FUZZ_REPETITIONS; ++i) {
-    auto c{random_container()};
+    auto c{random_container(18, 24)};
+    std::span<uint8_t const, 16> t{c};
     ulf::mdu_ein::special2mdu_ein(static_cast<ulf::mdu_ein::Command>(rd()),
-                                  static_cast<uint16_t>(rd()));
+                                  static_cast<uint8_t>(rd()),
+                                  {t});
   }
 }

@@ -48,7 +48,10 @@ mdu_ein2bytes(std::span<uint8_t const> frame) {
   // Check if packet already contains length
   if (count < 6uz) return std::nullopt;
 
-  auto const length{data2uint16(&frame[4])};
+  auto it{begin(frame) + prefix.size()};
+
+  auto const length{data2uint16(it)};
+  it += sizeof(uint16_t);
 
   if (length == 0u) {
     // Special Command

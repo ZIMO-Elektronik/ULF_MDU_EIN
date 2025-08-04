@@ -10,7 +10,7 @@ TEST(special, valid_dcczpp_frame) {
   ASSERT_TRUE(res);
   ASSERT_TRUE(*res);
   ASSERT_EQ((**res).command, ulf::mdu_ein::Command::Entry);
-  ASSERT_EQ((**res).payload, 0x02u);
+  ASSERT_EQ((**res).subcommand, 0x02u);
 }
 
 TEST(special, valid_dcczsu_frame) {
@@ -20,7 +20,7 @@ TEST(special, valid_dcczsu_frame) {
   ASSERT_TRUE(res);
   ASSERT_TRUE(*res);
   ASSERT_EQ((**res).command, ulf::mdu_ein::Command::Entry);
-  ASSERT_EQ((**res).payload, 0x01u);
+  ASSERT_EQ((**res).subcommand, 0x01u);
 }
 
 TEST(special, valid_mdualt_frame) {
@@ -30,7 +30,7 @@ TEST(special, valid_mdualt_frame) {
   ASSERT_TRUE(res);
   ASSERT_TRUE(*res);
   ASSERT_EQ((**res).command, ulf::mdu_ein::Command::Entry);
-  ASSERT_EQ((**res).payload, 0x00u);
+  ASSERT_EQ((**res).subcommand, 0x00u);
 }
 
 TEST(special, prefix) {
@@ -44,11 +44,13 @@ TEST(special, prefix) {
 
 TEST(special, special) {
   auto builder = FrameBuilder{};
-  auto frame =
-    builder.prefix()
-      .length()
-      .special(std::to_underlying(ulf::mdu_ein::Command::Entry), 0x00uz)
-      .frame();
+  std::array<uint8_t, ulf::mdu_ein::payload_size> payload{};
+  auto frame = builder.prefix()
+                 .length()
+                 .special(std::to_underlying(ulf::mdu_ein::Command::Entry),
+                          0x00uz,
+                          payload)
+                 .frame();
   auto res = ulf::mdu_ein::detail::mdu_ein2special(frame);
 
   ASSERT_TRUE(res);
@@ -115,5 +117,5 @@ TEST(special, additional_data) {
   ASSERT_TRUE(res);
   ASSERT_TRUE(*res);
   ASSERT_EQ((**res).command, ulf::mdu_ein::Command::Entry);
-  ASSERT_EQ((**res).payload, 0x02u);
+  ASSERT_EQ((**res).subcommand, 0x02u);
 }

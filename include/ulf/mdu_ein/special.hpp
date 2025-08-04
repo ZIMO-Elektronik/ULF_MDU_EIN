@@ -18,6 +18,8 @@ namespace ulf::mdu_ein {
 
 using std::operator""sv;
 
+constexpr uint8_t payload_size{16u};
+
 /// Command codes
 enum class Command : uint32_t {
   Entry = std::ranges::fold_left(
@@ -28,8 +30,10 @@ enum class Command : uint32_t {
 
 /// Special command
 struct Special {
+
   Command command;
-  uint16_t payload;
+  uint8_t subcommand;
+  ztl::inplace_vector<uint8_t, payload_size> payload;
 };
 
 } // namespace ulf::mdu_ein

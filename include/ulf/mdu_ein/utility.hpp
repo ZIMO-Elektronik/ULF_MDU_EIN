@@ -35,11 +35,12 @@ inline constexpr size_t max_packet_frame_length{
 
 /// MDU_EIN special command frame length
 inline constexpr size_t max_special_frame_length{
-  size(prefix)       // Prefix
-  + sizeof(uint16_t) // Length
-  + sizeof(uint32_t) // Command
-  + sizeof(uint16_t) // Value
-  + size(suffix)     // Suffix
+  size(prefix)                  // Prefix
+  + sizeof(uint16_t)            // Length
+  + sizeof(Special::command)    // Command
+  + sizeof(Special::subcommand) // Subcommand
+  + payload_size                // Payload
+  + size(suffix)                // Suffix
 };
 
 /// Packet reference
@@ -66,10 +67,12 @@ constexpr size_t packet_length2frame_length(size_t length) {
 ///
 /// \return MDU_EIN special command frame length
 inline constexpr size_t special_frame_length{
-  size(prefix)       // Prefix length
-  + sizeof(uint16_t) // Length length
-  + 6uz              // Command length
-  + size(suffix)     // Suffix length
+  size(prefix)                  // Prefix length
+  + sizeof(uint16_t)            // Length length
+  + sizeof(Special::command)    // Command length
+  + sizeof(Special::subcommand) // Subcommand length
+  + payload_size                // Payload length
+  + size(suffix)                // Suffix length
 };
 
 /// Data to uint16_t
@@ -120,6 +123,7 @@ constexpr auto uint32_2data(uint32_t word, OutputIt out) {
   *out++ = static_cast<uint8_t>((word & 0x00FF'0000u) >> 16u);
   *out++ = static_cast<uint8_t>((word & 0x0000'FF00u) >> 8u);
   *out++ = static_cast<uint8_t>((word & 0x0000'00FFu) >> 0u);
+  return out;
 }
 
 } // namespace ulf::mdu_ein

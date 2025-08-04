@@ -81,7 +81,7 @@ TEST(packet, faulty_prefix) {
 TEST(packet, faulty_length) {
   auto frame = FrameBuilder::makeBusyPacketFrame().frame();
   frame.at(4u) = 0u;
-  frame.at(5u) = 0u;
+  frame.at(5u) = 1u;
   auto res = ulf::mdu_ein::mdu_ein2packet(frame);
 
   ASSERT_FALSE(res);
@@ -105,7 +105,9 @@ TEST(packet, parse_special) {
   ASSERT_TRUE(std::holds_alternative<ulf::mdu_ein::Special>(**res));
   ASSERT_EQ(std::get<ulf::mdu_ein::Special>(**res).command,
             ulf::mdu_ein::Command::Entry);
-  ASSERT_EQ(std::get<ulf::mdu_ein::Special>(**res).payload, 0x00u);
+  ASSERT_EQ(std::get<ulf::mdu_ein::Special>(**res).subcommand, 0x00u);
+  ASSERT_TRUE(std::ranges::equal(std::get<ulf::mdu_ein::Special>(**res).payload,
+                                 dummy_payload));
 }
 
 TEST(packet, additional_data) {
