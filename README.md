@@ -55,7 +55,7 @@ The response for a ULF_MDU_EIN packet frame is a pair of standard ASCII ACK(`\x0
 The special commands are reserved commands to perform non-standard-tunneled actions such as entry sequence or transfer rate selection. Currently, possible commands are:
 | Code    | Subcommand    | Payload                                     | Description           |
 | ------- | ------------- | ------------------------------------------- | --------------------- |
-| 'ETRY'  | 0x00          | `zeroed`                                    | ZSU entry             |
+| 'ETRY'  | 0x00          | `zeroed`                                    | ZSU entry usind MDU   |
 |         | 0x01          | <a href="#dcc-zsu-entry">DCC ZSU Entry</a>  | ZSU entry using DCC   |
 |         | 0x02          | <a href="#dcc-zpp-entry">DCC ZPP Entry</a>  | ZPP entry using DCC   |
 | 'SPDS'  | 0x0X          | `zeroed`                                    | Set speed to X (0..4) |
@@ -66,18 +66,18 @@ The response for special commands is the same as in the general case. In case of
 The DCC ZSU entry may need one or multiple decoder serial numbers (SN) and / or decoder identifier (ID). Hence, the payload for this command is structured as follows
 | Byte(s)  | Description              |
 | -------- | ------------------------ |
-| [15..12] | Decoder Identifier       |
-| [11..8]  | Decoder Serial number    |
-| [7]      | Continue Entry sequence  |
-| [6..0]   | `zeroed`                 |
+| [0..3]   | Decoder Identifier       |
+| [4..7]   | Decoder Serial number    |
+| [8]      | Continue Entry sequence  |
+| [9..15]  | `zeroed`                 |
 
 #### DCC ZPP Entry
 The DCC ZPP entry may need one or multiple decoder serial numbers (SN). Hence, the payload for this command is structured as follows
 | Byte(s)  | Description              |
 | -------- | ------------------------ |
-| [15..12] | Decoder Serial number    |
-| [11]     | Continue Entry sequence  |
-| [10..0]  | `zeroed`                 |
+| [0..3]   | Decoder Serial number    |
+| [4]      | Continue Entry sequence  |
+| [5..15]  | `zeroed`                 |
 
 ### Timeout
 In case of unstable USB communication (e.g. bugs in CDC driver), timeouts need to be defined. The following timeout values are calculated using the worst case MDU packet (ZppWrite - 256 byte zero payload), while also respecting the bit timings of each transfer rate.
