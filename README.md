@@ -60,7 +60,9 @@ The special commands are reserved commands to perform non-standard-tunneled acti
 |         | 0x02          | <a href="#dcc-zpp-entry">DCC ZPP Entry</a>  | ZPP entry using DCC   |
 | 'SPDS'  | 0x0X          | `zeroed`                                    | Set speed to X (0..4) |
 
-The response for special commands is the same as in the general case. In case of error transmit `\x15;\x15:`, in the case of success `\x06;\x06:`.
+The response for special commands is the same as in the general case. In case of error transmit `\x15;\x15:`, in the case of success `\x06;\x06:`. 
+
+Since Commands may need additional data, an additional payload with 16 byte size is sent. If the payload is not needed, it is simply zeroed. All multi-byte values (e.g. Decoder-ID) are written as Big-Endian. 
 
 #### DCC ZSU Entry 
 The DCC ZSU entry may need one or multiple decoder serial numbers (SN) and / or decoder identifier (ID). Hence, the payload for this command is structured as follows
@@ -68,16 +70,20 @@ The DCC ZSU entry may need one or multiple decoder serial numbers (SN) and / or 
 | -------- | ------------------------ |
 | [0..3]   | Decoder Identifier       |
 | [4..7]   | Decoder Serial number    |
-| [8]      | Continue Entry sequence  |
+| [8]      | `Continue` Flag          |
 | [9..15]  | `zeroed`                 |
+
+If the `Continue` Flag is set to 0x01, an additional entry command of the same type must follow. If it is set to 0x00, the entry sequence ends once finished and MDU tunnel operations begin.
 
 #### DCC ZPP Entry
 The DCC ZPP entry may need one or multiple decoder serial numbers (SN). Hence, the payload for this command is structured as follows
 | Byte(s)  | Description              |
 | -------- | ------------------------ |
 | [0..3]   | Decoder Serial number    |
-| [4]      | Continue Entry sequence  |
+| [4]      | `Continue` Flag          |
 | [5..15]  | `zeroed`                 |
+
+If the `Continue` Flag is set to 0x01, an additional entry command of the same type must follow. If it is set to 0x00, the entry sequence ends once finished and MDU tunnel operations begin.
 
 ### Timeout
 In case of unstable USB communication (e.g. bugs in CDC driver), timeouts need to be defined. The following timeout values are calculated using the worst case MDU packet (ZppWrite - 256 byte zero payload), while also respecting the bit timings of each transfer rate.
