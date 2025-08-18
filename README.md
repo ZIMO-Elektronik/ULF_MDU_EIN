@@ -65,23 +65,23 @@ The response for special commands is the same as in the general case. In case of
 Since Commands may need additional data, an additional payload with 16 byte size is sent. If the payload is not needed, it is simply zeroed. All multi-byte values (e.g. Decoder-ID) are written as Big-Endian. 
 
 #### DCC ZSU Entry 
-The DCC ZSU entry may need one or multiple decoder serial numbers (SN) and / or decoder identifier (ID). Hence, the payload for this command is structured as follows
-| Byte(s)  | Description              |
-| -------- | ------------------------ |
-| [0..3]   | Decoder Identifier       |
-| [4..7]   | Decoder Serial number    |
-| [8]      | `Continue` Flag          |
-| [9..15]  | `zeroed`                 |
+The DCC ZSU entry may need one or multiple decoder serial numbers (SN) and / or decoder identifier (ID). Hence, the payload for this command (example MS450) is structured as follows
+| Byte(s)  | Value(s)             | Description              |
+| -------- | -------------------- | ------------------------ |
+| [0..3]   | \x06 \x04 \x32 \x03  | Decoder Identifier       |
+| [4..7]   | \x06 \xFF \xF2 \xB3  | Decoder Serial number    |
+| [8]      | [\x00] OR [\x01]     | `Continue` Flag          |
+| [9..15]  | \x00                 | `zeroed`                 |
 
 If the `Continue` Flag is set to 0x01, an additional entry command of the same type must follow. If it is set to 0x00, the entry sequence ends once finished and MDU tunnel operations begin.
 
 #### DCC ZPP Entry
-The DCC ZPP entry may need one or multiple decoder serial numbers (SN). Hence, the payload for this command is structured as follows
-| Byte(s)  | Description              |
-| -------- | ------------------------ |
-| [0..3]   | Decoder Serial number    |
-| [4]      | `Continue` Flag          |
-| [5..15]  | `zeroed`                 |
+The DCC ZPP entry may need one or multiple decoder serial numbers (SN). Hence, the payload for this command (example MS450) is structured as follows
+| Byte(s)  | Value(s)             | Description              |
+| -------- | -------------------- | ------------------------ |
+| [0..3]   | \x06 \xFF \xF2 \xB3  | Decoder Serial number    |
+| [4]      | [\x00] OR [\x01]     | `Continue` Flag          |
+| [5..15]  | \x00                 | `zeroed`                 |
 
 If the `Continue` Flag is set to 0x01, an additional entry command of the same type must follow. If it is set to 0x00, the entry sequence ends once finished and MDU tunnel operations begin.
 

@@ -20,13 +20,13 @@
 namespace ulf::mdu_ein {
 
 /// Prefix
-inline constexpr std::string_view prefix{"MDUB"};
+constexpr std::string_view prefix{"MDUB"};
 
 /// Suffix
-inline constexpr std::string_view suffix{"MDUE"};
+constexpr std::string_view suffix{"MDUE"};
 
 /// Maximum MDU_EIN packet frame length
-inline constexpr size_t max_packet_frame_length{
+constexpr size_t max_packet_frame_length{
   size(prefix)          // Prefix
   + sizeof(uint16_t)    // Length
   + MDU_MAX_PACKET_SIZE // Packet
@@ -34,7 +34,7 @@ inline constexpr size_t max_packet_frame_length{
 };
 
 /// MDU_EIN special command frame length
-inline constexpr size_t max_special_frame_length{
+constexpr size_t max_special_frame_length{
   size(prefix)                  // Prefix
   + sizeof(uint16_t)            // Length
   + sizeof(Special::command)    // Command
@@ -66,7 +66,7 @@ constexpr size_t packet_length2frame_length(size_t length) {
 /// Special command frame length
 ///
 /// \return MDU_EIN special command frame length
-inline constexpr size_t special_frame_length{
+constexpr size_t special_frame_length{
   size(prefix)                  // Prefix length
   + sizeof(uint16_t)            // Length length
   + sizeof(Special::command)    // Command length

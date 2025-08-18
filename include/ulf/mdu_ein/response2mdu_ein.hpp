@@ -20,10 +20,10 @@ namespace ulf::mdu_ein {
 using Response = ztl::inplace_vector<uint8_t, 4uz>;
 
 /// Response separator (ASCII semicolon)
-inline constexpr uint8_t separator{static_cast<uint8_t>(';')};
+constexpr uint8_t separator{static_cast<uint8_t>(';')};
 
 /// Response end character (ASCII colon)
-inline constexpr uint8_t end{static_cast<uint8_t>(':')};
+constexpr uint8_t end{static_cast<uint8_t>(':')};
 
 /// Formats a MDU_EIN response
 ///
