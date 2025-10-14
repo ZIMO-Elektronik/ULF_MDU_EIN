@@ -18,7 +18,7 @@ namespace ulf::mdu_ein {
 
 using std::operator""sv;
 
-constexpr uint8_t payload_size{16u};
+inline constexpr auto payload_size{16uz};
 
 /// Command codes
 enum class Command : uint32_t {

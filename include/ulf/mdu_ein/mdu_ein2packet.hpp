@@ -53,10 +53,8 @@ mdu_ein2bytes(std::span<uint8_t const> frame) {
   auto const length{data2uint16(it)};
   it += sizeof(uint16_t);
 
-  if (length == 0u) {
-    // Special Command
-    return detail::mdu_ein2special(frame);
-  }
+  // Special Command
+  if (length == 0u) return detail::mdu_ein2special(frame);
 
   // Check packet length
   if (size(frame) < packet_length2frame_length(length)) return std::nullopt;

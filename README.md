@@ -28,7 +28,7 @@ ULF_MDU_EIN is one of several [ULF_COM](https://github.com/ZIMO-Elektronik/ULF_C
 ## Protocol
 The protocol describes frames for ZPP / ZSU tunneled MDU packets and special commands.
 
-### ZPP / ZSU 
+### ZPP / ZSU
 A standard ULF_MDU_EIN frame contains the tunneled MDU packet.
 | Length  | Value  | Description      |
 | ------- | ------ | ---------------- |
@@ -45,7 +45,7 @@ The response for a ULF_MDU_EIN packet frame is a pair of standard ASCII ACK(`\x0
 ### Special Command
 | Length  | Value  | Description                    |
 | ------- | ------ | ------------------------------ |
-| 4 byte  | `MDUB` | Frame prefix                   | 
+| 4 byte  | `MDUB` | Frame prefix                   |
 | 2 byte  | 0x00   |                                |
 | 4 byte  |        | Command code                   |
 | 1 byte  |        | Subcommand depends on command  |
@@ -53,18 +53,18 @@ The response for a ULF_MDU_EIN packet frame is a pair of standard ASCII ACK(`\x0
 | 4 byte  | `MDUE` | Frame suffix                   |
 
 The special commands are reserved commands to perform non-standard-tunneled actions such as entry sequence or transfer rate selection. Currently, possible commands are:
-| Code    | Subcommand    | Payload                                     | Description           |
-| ------- | ------------- | ------------------------------------------- | --------------------- |
-| 'ETRY'  | 0x00          | `zeroed`                                    | ZSU entry usind MDU   |
-|         | 0x01          | <a href="#dcc-zsu-entry">DCC ZSU Entry</a>  | ZSU entry using DCC   |
-|         | 0x02          | <a href="#dcc-zpp-entry">DCC ZPP Entry</a>  | ZPP entry using DCC   |
-| 'SPDS'  | 0x0X          | `zeroed`                                    | Set speed to X (0..4) |
+| Command Code | Subcommand | Payload                                      | Description           |
+| ------------ | ---------- | -------------------------------------------- | --------------------- |
+| 'ETRY'       | 0x00       | `zeroed`                                     | ZSU entry usind MDU   |
+|              | 0x01       | <a href="#dcc-zsu-entry">DCC ZSU Entry</a> | ZSU entry using DCC   |
+|              | 0x02       | <a href="#dcc-zpp-entry">DCC ZPP Entry</a> | ZPP entry using DCC   |
+| 'SPDS'       | 0x0X       | `zeroed`                                     | Set speed to X (0..4) |
 
 The response for special commands is the same as in the general case. In case of error transmit `\x15;\x15:`, in the case of success `\x06;\x06:`. 
 
-Since Commands may need additional data, an additional payload with 16 byte size is sent. If the payload is not needed, it is simply zeroed. All multi-byte values (e.g. Decoder-ID) are written as Big-Endian. 
+Since commands may need additional data, an additional payload with 16 byte size is sent. If the payload is not needed, it is simply zeroed. All multi-byte values (e.g. Decoder-ID) are written as Big-Endian.
 
-#### DCC ZSU Entry 
+#### DCC ZSU Entry
 The DCC ZSU entry may need one or multiple decoder serial numbers (SN) and / or decoder identifier (ID). Hence, the payload for this command (example MS450) is structured as follows
 | Byte(s)  | Value(s)             | Description              |
 | -------- | -------------------- | ------------------------ |
@@ -87,7 +87,7 @@ If the `Continue` Flag is set to 0x01, an additional entry command of the same t
 
 ### Timeout
 In case of unstable USB communication (e.g. bugs in CDC driver), timeouts need to be defined. The following timeout values are calculated using the worst case MDU packet (ZppWrite - 256 byte zero payload), while also respecting the bit timings of each transfer rate.
-| Transfer rate | Timeout [ms] |
+| Transfer Rate | Timeout [ms] |
 | ------------- | ------------ |
 | 0 (fallback)  | 5600         |
 | 1             | 100          |
@@ -127,16 +127,19 @@ target_link_libraries(YourTarget PRIVATE ULF::MDU_EIN)
 :construction:
 
 ## Usage
-To convert an ULF_MDU_EIN frame to a MDU packet, `mdu_ein2packet` can be used. In order to be able to distinguish between an error case and the case where the data is still incomplete, the return value of the function is `std::expected<std::optional<ulf::mdu_ein::MDUCopyOutput>, std::errc>`. If the pattern is not recognized at all, i.e. in the event of an error, then a `std::errc` is returned. If something is found but the data is not yet complete, a `std::nullopt` is returned. Otherwise the found data is returned as `ulf::mdu_ein::MDUCopyOutput`. The following snippet shows how `mdu_ein2packet` can be used.
+To convert an ULF_MDU_EIN frame into an MDU packet, `mdu_ein2packet` can be used. In order to be able to distinguish between an error case and the case where the data is still incomplete, the return value of the function is `std::expected<std::optional<CopyOutput>, std::errc>`. If the pattern is not recognized at all, i.e. in the event of an error, then a `std::errc` is returned. If something is found but the data is not yet complete, a `std::nullopt` is returned. Otherwise the found data is returned as `CopyOutput`, a union of either an MDU packet or a special command. The following snippet shows how `mdu_ein2packet` can be used.
 ```cpp
-auto maybe_mdu{ulf::mdu_ein::mdu_ein2packet(mdu_ein_frm)};
+auto maybe_mdu{ulf::mdu_ein::mdu_ein2packet(mdu_ein_frame)};
 
 // Could be MDU
 if (maybe_mdu) {
   // Already complete?
   if (*maybe_mdu) {
-    // Complete MDU
-    auto mdu{**maybe_mdu};
+    // Packet
+    if (std::holds_alternative<mdu::Packet>(**maybe_mdu))
+      auto packet{std::get<mdu::Packet>(**maybe_mdu)};
+    // ... or special command
+    else auto special{std::get<ulf::mdu_ein::Special>(**maybe_mdu)};
   }
   // No, still missing data
   else {}
@@ -145,21 +148,28 @@ if (maybe_mdu) {
 else {}
 ```
 
-Similar to above, `mdu_ein2bytes` can be used. This will output a `std::expected<std::optional<ulf::mdu_ein::MDURefOutput>, std::errc>`, which holds a `std::span` pointing to the MDU packet within the frame on success.
-
-The return types are a union of either a MDU packet (or ref) or a special command. The following snippet shows how the types can be safely distinguished and used.
+As an optimization, there is another variant `mdu_ein2bytes` that does not return a copy of the packets but only a `std::span` that points to the packet contained in the frame. The usage is very similar, except that if successful, you have to check for `PacketRef` instead of `mdu::Packet`.
 ```cpp
-ulf::mdu_ein::MDURefOutput output;
-if (std::holds_alternative<mdu::Packet>(output)) {
-  // Is packet
-  auto packet = std::get<mdu::Packet>(output)
-} else {
-  // Is special command
-  auto special = std::get<ulf::mdu_ein::Special>(output)
+auto maybe_mdu{ulf::mdu_ein::mdu_ein2bytes(mdu_ein_frame)};
+
+// Could be MDU
+if (maybe_mdu) {
+  // Already complete?
+  if (*maybe_mdu) {
+    // PacketRef
+    if (std::holds_alternative<ulf::mdu_ein::PacketRef>(**maybe_mdu))
+      auto packet_ref{std::get<ulf::mdu_ein::PacketRef>(**maybe_mdu)};
+    // ... or special command
+    else auto special{std::get<ulf::mdu_ein::Special>(**maybe_mdu)};
+  }
+  // No, still missing data
+  else {}
 }
+// Error, not MDU
+else {}
 ```
 
-A mdu response can be constructed using `response2mdu_ein`. This will output a 4 byte `ztl::inplace_vector` containing the formatted response. Note, that the order of response channels is important, as shown in the following snippet.
+A mdu response can be constructed using `response2mdu_ein`. This will output a 4 byte `Response` containing the formatted response. Note, that the order of response channels is important, as shown in the following snippet.
 ```cpp
 // Create response from channel1 and channel2 response
 bool channel1{};

@@ -71,8 +71,9 @@ mdu_ein2special(std::span<uint8_t const> frame) {
       Special special{.command{static_cast<Command>(command)},
                       .subcommand{*it++},
                       .payload{}};
-      std::ranges::copy(frame.subspan(it - begin(frame), payload_size),
-                        std::back_inserter(special.payload));
+      std::ranges::copy(
+        frame.subspan(static_cast<size_t>(it - begin(frame)), payload_size),
+        std::back_inserter(special.payload));
       return special;
     }
     default: return std::unexpected{std::errc::invalid_argument};

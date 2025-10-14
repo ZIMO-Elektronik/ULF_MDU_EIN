@@ -4,13 +4,13 @@
 #include "../frame_builder.hpp"
 
 TEST(packet, valid_frame) {
-  auto frame = FrameBuilder::makeBusyPacketFrame().frame();
-  auto res = ulf::mdu_ein::mdu_ein2packet(frame);
+  auto frame{FrameBuilder::makeBusyPacketFrame().frame()};
+  auto res{ulf::mdu_ein::mdu_ein2packet(frame)};
 
   ASSERT_TRUE(res);
   ASSERT_TRUE(*res);
 
-  auto eval = ::mdu::make_busy_packet();
+  auto eval{::mdu::make_busy_packet()};
 
   ASSERT_TRUE(std::holds_alternative<mdu::Packet>(**res));
 
@@ -24,10 +24,10 @@ TEST(packet, valid_frame) {
 
 TEST(packet, valid_data_frame) {
   std::vector<uint8_t> data(64uz);
-  auto packet = mdu::make_zsu_update_packet(0u, std::span<uint8_t, 64>{data});
-  auto frame = FrameBuilder::makePacketFrame(packet).frame();
+  auto packet{mdu::make_zsu_update_packet(0u, std::span<uint8_t, 64>{data})};
+  auto frame{FrameBuilder::makePacketFrame(packet).frame()};
 
-  auto res = ulf::mdu_ein::mdu_ein2packet(frame);
+  auto res{ulf::mdu_ein::mdu_ein2packet(frame)};
 
   ASSERT_TRUE(res);
   ASSERT_TRUE(*res);
@@ -44,8 +44,8 @@ TEST(packet, valid_data_frame) {
 
 TEST(packet, prefix) {
   FrameBuilder builder{};
-  auto frame = builder.prefix().frame();
-  auto res = ulf::mdu_ein::mdu_ein2packet(frame);
+  auto frame{builder.prefix().frame()};
+  auto res{ulf::mdu_ein::mdu_ein2packet(frame)};
 
   ASSERT_TRUE(res);
   ASSERT_FALSE(*res);
@@ -53,8 +53,8 @@ TEST(packet, prefix) {
 
 TEST(packet, length) {
   FrameBuilder builder{};
-  auto frame = builder.prefix().length(4u).frame();
-  auto res = ulf::mdu_ein::mdu_ein2packet(frame);
+  auto frame{builder.prefix().length(4u).frame()};
+  auto res{ulf::mdu_ein::mdu_ein2packet(frame)};
 
   ASSERT_TRUE(res);
   ASSERT_FALSE(*res);
@@ -62,42 +62,42 @@ TEST(packet, length) {
 
 TEST(packet, packet) {
   FrameBuilder builder{};
-  auto packet = ::mdu::make_busy_packet();
-  auto frame = builder.prefix().length(size(packet)).packet(packet).frame();
-  auto res = ulf::mdu_ein::mdu_ein2packet(frame);
+  auto packet{::mdu::make_busy_packet()};
+  auto frame{builder.prefix().length(size(packet)).packet(packet).frame()};
+  auto res{ulf::mdu_ein::mdu_ein2packet(frame)};
 
   ASSERT_TRUE(res);
   ASSERT_FALSE(*res);
 }
 
 TEST(packet, faulty_prefix) {
-  auto frame = FrameBuilder::makeBusyPacketFrame().frame();
+  auto frame{FrameBuilder::makeBusyPacketFrame().frame()};
   frame.at(3u) = 0u;
-  auto res = ulf::mdu_ein::mdu_ein2packet(frame);
+  auto res{ulf::mdu_ein::mdu_ein2packet(frame)};
 
   ASSERT_FALSE(res);
 }
 
 TEST(packet, faulty_length) {
-  auto frame = FrameBuilder::makeBusyPacketFrame().frame();
+  auto frame{FrameBuilder::makeBusyPacketFrame().frame()};
   frame.at(4u) = 0u;
   frame.at(5u) = 1u;
-  auto res = ulf::mdu_ein::mdu_ein2packet(frame);
+  auto res{ulf::mdu_ein::mdu_ein2packet(frame)};
 
   ASSERT_FALSE(res);
 }
 
 TEST(packet, faulty_suffix) {
-  auto frame = FrameBuilder::makeBusyPacketFrame().frame();
+  auto frame{FrameBuilder::makeBusyPacketFrame().frame()};
   frame.back() = 0u;
-  auto res = ulf::mdu_ein::mdu_ein2packet(frame);
+  auto res{ulf::mdu_ein::mdu_ein2packet(frame)};
 
   ASSERT_FALSE(res);
 }
 
 TEST(packet, parse_special) {
-  auto frame = FrameBuilder::makeMDUALTFrame().frame();
-  auto res = ulf::mdu_ein::mdu_ein2packet(frame);
+  auto frame{FrameBuilder::makeMDUALTFrame().frame()};
+  auto res{ulf::mdu_ein::mdu_ein2packet(frame)};
 
   ASSERT_TRUE(res);
   ASSERT_TRUE(*res);
@@ -111,20 +111,20 @@ TEST(packet, parse_special) {
 }
 
 TEST(packet, additional_data) {
-  auto frame = FrameBuilder::makeBusyPacketFrame().frame();
+  auto frame{FrameBuilder::makeBusyPacketFrame().frame()};
   std::fill_n(std::back_inserter(frame), 10u, 0u);
 
-  auto res = ulf::mdu_ein::mdu_ein2packet(frame);
+  auto res{ulf::mdu_ein::mdu_ein2packet(frame)};
 
   ASSERT_TRUE(res);
   ASSERT_TRUE(*res);
 
-  auto eval = ::mdu::make_busy_packet();
+  auto eval{::mdu::make_busy_packet()};
 
   ASSERT_TRUE(std::holds_alternative<mdu::Packet>(**res));
 
-  auto r = std::get<mdu::Packet>(**res).begin();
-  auto e = eval.begin();
+  auto r{std::get<mdu::Packet>(**res).begin()};
+  auto e{eval.begin()};
 
   while (e != eval.end()) { ASSERT_EQ(*r++, *e++); }
 
