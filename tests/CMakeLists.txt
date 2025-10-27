@@ -6,6 +6,7 @@ add_executable(ULF_MDU_EINTests ${SRC})
 sanitize(address,undefined,leak,bounds)
 
 target_common_warnings(ULF_MDU_EINTests PRIVATE)
+target_common_errors(ULF_MDU_EINTests PRIVATE -Werror)
 
 cpmaddpackage(URI "gh:google/googletest#main" OPTIONS "INSTALL_GTEST OFF")
 
