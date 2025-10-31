@@ -20,13 +20,13 @@
 namespace ulf::mdu_ein {
 
 /// Prefix
-constexpr std::string_view prefix{"MDUB"};
+inline constexpr std::string_view prefix{"MDUB"};
 
 /// Suffix
-constexpr std::string_view suffix{"MDUE"};
+inline constexpr std::string_view suffix{"MDUE"};
 
 /// Maximum MDU_EIN packet frame length
-constexpr size_t max_packet_frame_length{
+inline constexpr size_t max_packet_frame_length{
   size(prefix)          // Prefix
   + sizeof(uint16_t)    // Length
   + MDU_MAX_PACKET_SIZE // Packet
@@ -34,7 +34,7 @@ constexpr size_t max_packet_frame_length{
 };
 
 /// MDU_EIN special command frame length
-constexpr size_t max_special_frame_length{
+inline constexpr size_t max_special_frame_length{
   size(prefix)                  // Prefix
   + sizeof(uint16_t)            // Length
   + sizeof(Special::command)    // Command
@@ -66,7 +66,7 @@ constexpr size_t packet_length2frame_length(size_t length) {
 /// Special command frame length
 ///
 /// \return MDU_EIN special command frame length
-constexpr size_t special_frame_length{
+inline constexpr size_t special_frame_length{
   size(prefix)                  // Prefix length
   + sizeof(uint16_t)            // Length length
   + sizeof(Special::command)    // Command length
@@ -94,8 +94,8 @@ constexpr auto data2uint16(RandomIt first) {
 /// \return Output iterator one past the last element copied
 template<std::output_iterator<uint8_t> OutputIt>
 constexpr auto uint16_2data(uint16_t hword, OutputIt out) {
-  *out++ = static_cast<uint8_t>((hword & 0x0000'FF00u) >> 8u);
-  *out++ = static_cast<uint8_t>((hword & 0x0000'00FFu) >> 0u);
+  *out++ = static_cast<uint8_t>(hword >> 8u);
+  *out++ = static_cast<uint8_t>(hword >> 0u);
   return out;
 }
 
@@ -119,10 +119,10 @@ constexpr auto data2uint32(RandomIt first) {
 /// \return Output iterator one past the last element copied
 template<std::output_iterator<uint8_t> OutputIt>
 constexpr auto uint32_2data(uint32_t word, OutputIt out) {
-  *out++ = static_cast<uint8_t>((word & 0xFF00'0000u) >> 24u);
-  *out++ = static_cast<uint8_t>((word & 0x00FF'0000u) >> 16u);
-  *out++ = static_cast<uint8_t>((word & 0x0000'FF00u) >> 8u);
-  *out++ = static_cast<uint8_t>((word & 0x0000'00FFu) >> 0u);
+  *out++ = static_cast<uint8_t>(word >> 24u);
+  *out++ = static_cast<uint8_t>(word >> 16u);
+  *out++ = static_cast<uint8_t>(word >> 8u);
+  *out++ = static_cast<uint8_t>(word >> 0u);
   return out;
 }
 

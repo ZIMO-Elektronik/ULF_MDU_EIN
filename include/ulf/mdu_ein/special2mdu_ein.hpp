@@ -25,7 +25,7 @@ namespace ulf::mdu_ein {
 constexpr ztl::inplace_vector<uint8_t, max_special_frame_length>
 special2mdu_ein(Command command,
                 uint8_t subcommand,
-                std::span<uint8_t const, 16> payload) {
+                std::span<uint8_t const, 16uz> payload) {
   ztl::inplace_vector<uint8_t, max_special_frame_length> result{};
   auto iter{std::back_inserter(result)};
 
