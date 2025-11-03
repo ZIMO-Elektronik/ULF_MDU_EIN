@@ -40,31 +40,42 @@ mdu_ein2special(std::span<uint8_t const> frame) {
   // Check if packet already contains length
   if (count < 6uz) return std::nullopt;
 
+  auto it{begin(frame) + prefix.size()};
+
   // Check packet length
-  size_t const length{data2uint16(&frame[4])};
+  size_t const length{data2uint16(it)};
+  it += sizeof(uint16_t);
+
   if (length != 0u) return std::unexpected{std::errc::invalid_argument};
 
   // String must end with "MDUE"
   if (!f_str.substr(0u, special_frame_length)
          .ends_with(
-           suffix.substr(0uz, count - (6uz + size(prefix) + sizeof(uint16_t)))))
+
+           suffix.substr(0uz,
+                         count - (size(prefix) + sizeof(uint16_t) +
+                                  sizeof(Special::command) +
+                                  sizeof(Special::subcommand) + payload_size))))
     return std::unexpected{std::errc::invalid_argument};
 
   // Check
   if (size(f_str) < special_frame_length) return std::nullopt;
 
-  Special retval{};
-
   // Convert command and value
-  uint32_t command{data2uint32(&frame[6uz])};
-  uint16_t value{data2uint16(&frame[10uz])};
+  uint32_t const command{data2uint32(it)};
+  it += sizeof(uint32_t);
 
   switch (command) {
     case std::to_underlying(Command::Entry): [[fallthrough]];
-    case std::to_underlying(Command::Speed):
-      retval.command = static_cast<Command>(command);
-      retval.payload = value;
-      return retval;
+    case std::to_underlying(Command::Speed): {
+      Special special{.command{static_cast<Command>(command)},
+                      .subcommand{*it++},
+                      .payload{}};
+      std::ranges::copy(
+        frame.subspan(static_cast<size_t>(it - begin(frame)), payload_size),
+        std::back_inserter(special.payload));
+      return special;
+    }
     default: return std::unexpected{std::errc::invalid_argument};
   }
 

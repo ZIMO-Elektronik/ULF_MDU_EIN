@@ -10,7 +10,7 @@ inline std::vector<uint8_t> random_container(size_t min_length = 1,
   std::vector<uint8_t> result{};
 
   // Create a container with random length and fill with random elements
-  size_t length = rd() % max_length;
+  size_t length{rd() % max_length};
   if (length < min_length) length = min_length;
   result.resize(length);
 
