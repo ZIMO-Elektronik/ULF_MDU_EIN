@@ -10,9 +10,10 @@
 
 #pragma once
 
-#include <array>
-#include <cstddef>
+#include <algorithm>
+#include <cstdint>
 #include <string_view>
+#include <ztl/inplace_vector.hpp>
 
 namespace ulf::mdu_ein {
 
@@ -21,7 +22,7 @@ using std::operator""sv;
 inline constexpr auto payload_size{16uz};
 
 /// Command codes
-enum class Command : uint32_t {
+enum struct Command : uint32_t {
   Entry = std::ranges::fold_left(
     "ETRY"sv, 0u, [](uint32_t lhs, uint32_t rhs) { return (lhs << 8u | rhs); }),
   Speed = std::ranges::fold_left(
@@ -30,7 +31,6 @@ enum class Command : uint32_t {
 
 /// Special command
 struct Special {
-
   Command command;
   uint8_t subcommand;
   ztl::inplace_vector<uint8_t, payload_size> payload;
