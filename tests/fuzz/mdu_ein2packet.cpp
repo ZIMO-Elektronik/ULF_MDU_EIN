@@ -5,14 +5,14 @@
 TEST(fuzz, mdu_ein2packet_random) {
   for (auto i{0uz}; i < FUZZ_REPETITIONS; ++i) {
     auto c{random_container()};
-    ulf::mdu_ein::mdu_ein2packet(c);
+    std::ignore = ulf::mdu_ein::mdu_ein2packet(c);
   }
 }
 
 TEST(fuzz, mdu_ein2bytes_random) {
   for (auto i{0uz}; i < FUZZ_REPETITIONS; ++i) {
     auto c{random_container()};
-    ulf::mdu_ein::mdu_ein2bytes(c);
+    std::ignore = ulf::mdu_ein::mdu_ein2bytes(c);
   }
 }
 

@@ -75,55 +75,7 @@ inline constexpr size_t special_frame_length{
   + size(suffix)                // Suffix length
 };
 
-/// Data to uint16_t
-///
-/// \tparam RandomIt  std::random_access_iterator
-/// \param  first     Beginning of the source range
-/// \return uint16_t
-template<std::random_access_iterator RandomIt>
-requires(sizeof(std::iter_value_t<RandomIt>) == 1uz)
-constexpr auto data2uint16(RandomIt first) {
-  return static_cast<uint16_t>(first[0uz] << 8u | first[1uz] << 0u);
-}
-
-/// uint16 to data
-///
-/// \tparam OutputIt  std::output_iterator
-/// \param  hword     Half-word to convert
-/// \param  out       Beginning of the destination range
-/// \return Output iterator one past the last element copied
-template<std::output_iterator<uint8_t> OutputIt>
-constexpr auto uint16_2data(uint16_t hword, OutputIt out) {
-  *out++ = static_cast<uint8_t>(hword >> 8u);
-  *out++ = static_cast<uint8_t>(hword >> 0u);
-  return out;
-}
-
-/// Data to uint32_t
-///
-/// \tparam RandomIt  std::random_access_iterator
-/// \param  first     Beginning of the source range
-/// \return uint32_t
-template<std::random_access_iterator RandomIt>
-requires(sizeof(std::iter_value_t<RandomIt>) == 1uz)
-constexpr auto data2uint32(RandomIt first) {
-  return static_cast<uint32_t>(first[0uz] << 24u | first[1uz] << 16u |
-                               first[2uz] << 8u | first[3uz] << 0u);
-}
-
-/// uint32_t to data
-///
-/// \tparam OutputIt  std::output_iterator
-/// \param  word      Word to convert
-/// \param  out       Beginning of the destination range
-/// \return Output iterator one past the last element copied
-template<std::output_iterator<uint8_t> OutputIt>
-constexpr auto uint32_2data(uint32_t word, OutputIt out) {
-  *out++ = static_cast<uint8_t>(word >> 24u);
-  *out++ = static_cast<uint8_t>(word >> 16u);
-  *out++ = static_cast<uint8_t>(word >> 8u);
-  *out++ = static_cast<uint8_t>(word >> 0u);
-  return out;
-}
+using ::mdu::data2uint16, ::mdu::data2uint32, ::mdu::uint16_2data,
+  ::mdu::uint32_2data;
 
 } // namespace ulf::mdu_ein

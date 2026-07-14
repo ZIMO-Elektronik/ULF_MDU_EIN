@@ -4,7 +4,7 @@ include(FetchContent)
 FetchContent_Declare(
   CMakeModules
   GIT_REPOSITORY "https://github.com/ZIMO-Elektronik/CMakeModules"
-  GIT_TAG v0.12.2
+  GIT_TAG v0.12.4
   SOURCE_DIR ${CMAKE_BINARY_DIR}/CMakeModules)
 FetchContent_MakeAvailable(CMakeModules)
 
@@ -29,7 +29,7 @@ else()
 endif()
 
 if(NOT TARGET MDU::MDU)
-  cpmaddpackage("gh:ZIMO-Elektronik/MDU@0.19.0")
+  cpmaddpackage("gh:ZIMO-Elektronik/MDU@0.19.5")
 endif()
 
 target_link_libraries(ULF_MDU_EIN INTERFACE MDU::MDU)
